@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { ChevronLeft, ChevronRight, Plus, SlidersHorizontal } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Download, Plus, SlidersHorizontal } from 'lucide-react'
 import { useDemoData } from '../context/DemoDataContext'
 import { useToast } from '../context/ToastContext'
 import { useDebouncedValue } from '../hooks/useDebouncedValue'
+import { useExportCSV } from '../hooks/useExportCSV'
 import type { Transaction } from '../types'
 import { applyFilters, countActive, emptyFilters, type Filters } from '../utils/transactionFilters'
 import { TransactionFilters } from '../components/transactions/TransactionFilters'
@@ -20,6 +21,7 @@ const PAGE_SIZE = 10
 export default function TransactionsPage() {
   const { transactions, accounts, categories, deleteTransaction } = useDemoData()
   const { toast } = useToast()
+  const exportCSV = useExportCSV()
   const [params] = useSearchParams()
   const qParam = params.get('q') ?? ''
 
@@ -69,6 +71,17 @@ export default function TransactionsPage() {
             <SlidersHorizontal className="size-4" aria-hidden />
             Фильтры{active > 0 ? ` (${active})` : ''}
           </Button>
+          {filtered.length > 0 && (
+            <Button
+              variant="secondary"
+              onClick={() => {
+                exportCSV(filtered, categories, accounts)
+                toast('Файл CSV скачан')
+              }}
+            >
+              <Download className="size-4" aria-hidden /> CSV
+            </Button>
+          )}
           <Button onClick={openCreate}>
             <Plus className="size-4" aria-hidden /> Добавить
           </Button>

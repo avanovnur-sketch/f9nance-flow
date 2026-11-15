@@ -1,13 +1,15 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Bell, Moon, Search, Sun } from 'lucide-react'
+import { Bell, Moon, Search, Sun, User } from 'lucide-react'
 import { useTheme } from '../../context/ThemeContext'
+import { useAuth } from '../../context/AuthContext'
 import { useBudgetUsage } from '../../hooks/useBudgetUsage'
 import { IconButton } from '../ui/Button'
 import { LogoMark } from './Logo'
 
 export function Header() {
   const { theme, toggleTheme } = useTheme()
+  const { user } = useAuth()
   const navigate = useNavigate()
   const [q, setQ] = useState('')
   const alerts = useBudgetUsage().filter((b) => b.status !== 'ok').length
@@ -18,6 +20,10 @@ export function Header() {
     navigate(query ? `/transactions?q=${encodeURIComponent(query)}` : '/transactions')
   }
 
+  const initials = user?.user_metadata?.full_name
+    ? user.user_metadata.full_name.split(' ').map((w: string) => w[0]).slice(0, 2).join('').toUpperCase()
+    : user?.email?.[0]?.toUpperCase() ?? '?'
+
   return (
     <header className="sticky top-0 z-30 flex items-center gap-2 border-b border-border bg-bg/85 px-4 py-2.5 backdrop-blur md:px-6">
       <div className="md:hidden">
@@ -25,9 +31,7 @@ export function Header() {
       </div>
 
       <form role="search" onSubmit={onSearch} className="relative min-w-0 max-w-md flex-1">
-        <label htmlFor="global-search" className="sr-only">
-          Поиск операций
-        </label>
+        <label htmlFor="global-search" className="sr-only">Поиск операций</label>
         <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted" aria-hidden />
         <input
           id="global-search"
@@ -35,7 +39,7 @@ export function Header() {
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder="Поиск операций"
-          className="block min-h-11 w-full rounded-xl border border-border bg-card pl-9 pr-3 text-sm placeholder:text-muted"
+          className="block min-h-11 w-full rounded-xl border border-border bg-card pl-9 pr-3 text-sm placeholder:text-muted transition focus:border-accent"
         />
       </form>
 
@@ -44,12 +48,14 @@ export function Header() {
           aria-label={theme === 'dark' ? 'Включить светлую тему' : 'Включить тёмную тему'}
           onClick={toggleTheme}
         >
-          {theme === 'dark' ? <Sun className="size-5" aria-hidden /> : <Moon className="size-5" aria-hidden />}
+          {theme === 'dark'
+            ? <Sun className="size-5" aria-hidden />
+            : <Moon className="size-5" aria-hidden />}
         </IconButton>
 
         <Link
           to="/budgets"
-          aria-label={alerts > 0 ? `Уведомления: предупреждений по бюджету — ${alerts}` : 'Уведомления: нет новых'}
+          aria-label={alerts > 0 ? `Уведомления: ${alerts} предупреждений по бюджету` : 'Уведомления'}
           className="relative inline-flex size-11 items-center justify-center rounded-xl text-muted transition hover:bg-card-hover hover:text-fg"
         >
           <Bell className="size-5" aria-hidden />
@@ -63,9 +69,19 @@ export function Header() {
         <Link
           to="/settings"
           aria-label="Профиль и настройки"
-          className="ml-1 hidden size-10 items-center justify-center rounded-full bg-accent-strong text-sm font-semibold text-white sm:inline-flex"
+          className="ml-1 hidden size-10 shrink-0 overflow-hidden rounded-full shadow-sm transition hover:shadow-md sm:inline-flex"
         >
-          ДП
+          {user?.user_metadata?.avatar_url ? (
+            <img
+              src={user.user_metadata.avatar_url}
+              alt="Аватар"
+              className="size-full object-cover"
+            />
+          ) : (
+            <span className="flex size-full items-center justify-center bg-gradient-to-br from-accent-strong to-indigo-500 text-sm font-semibold text-white">
+              {initials !== '?' ? initials : <User className="size-4" />}
+            </span>
+          )}
         </Link>
       </div>
     </header>

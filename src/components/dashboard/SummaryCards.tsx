@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react'
 import { ArrowDownRight, ArrowUpRight, Minus, TrendingDown, TrendingUp, Wallet, type LucideIcon } from 'lucide-react'
-import { Card } from '../ui/Card'
 import type { Summary } from '../../utils/finance'
 import { percentChange } from '../../utils/finance'
 import { formatMoney, formatPercent, formatSignedMoney } from '../../utils/format'
@@ -31,42 +30,59 @@ function Item({
   icon: Icon,
   value,
   valueClass,
+  accentClass,
   children,
   className,
+  delay,
 }: {
   label: string
   icon: LucideIcon
   value: string
   valueClass: string
+  accentClass: string
   children: ReactNode
   className?: string
+  delay?: string
 }) {
   return (
-    <Card className={className}>
-      <div className="flex items-center gap-2 text-sm text-muted">
-        <Icon className="size-4" aria-hidden />
-        {label}
+    <div className={`animate-fade-up rounded-2xl border border-border bg-card p-5 transition hover:shadow-md hover:-translate-y-0.5 ${delay ?? ''} ${className ?? ''}`}>
+      <div className={`inline-flex size-10 items-center justify-center rounded-xl ${accentClass}`}>
+        <Icon className="size-5" aria-hidden />
       </div>
-      <p className={`tabular mt-2 text-2xl font-bold ${valueClass}`}>{value}</p>
+      <p className="mt-3 text-sm text-muted">{label}</p>
+      <p className={`tabular mt-1 text-2xl font-bold ${valueClass}`}>{value}</p>
       {children}
-    </Card>
+    </div>
   )
 }
 
 interface Props {
   current: Summary
   previous: Summary
-  /** Классы для сетки: net-карточка занимает всю ширину на планшете */
   netClassName?: string
 }
 
 export function SummaryCards({ current, previous, netClassName }: Props) {
   return (
     <>
-      <Item label="Доходы" icon={TrendingUp} value={`+${formatMoney(current.income)}`} valueClass="text-income">
+      <Item
+        label="Доходы"
+        icon={TrendingUp}
+        value={`+${formatMoney(current.income)}`}
+        valueClass="text-income"
+        accentClass="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
+        delay="delay-100"
+      >
         <Delta current={current.income} previous={previous.income} goodWhenUp />
       </Item>
-      <Item label="Расходы" icon={TrendingDown} value={`−${formatMoney(current.expenses)}`} valueClass="text-expense">
+      <Item
+        label="Расходы"
+        icon={TrendingDown}
+        value={`−${formatMoney(current.expenses)}`}
+        valueClass="text-expense"
+        accentClass="bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400"
+        delay="delay-200"
+      >
         <Delta current={current.expenses} previous={previous.expenses} goodWhenUp={false} />
       </Item>
       <Item
@@ -74,7 +90,9 @@ export function SummaryCards({ current, previous, netClassName }: Props) {
         icon={Wallet}
         value={formatSignedMoney(current.net)}
         valueClass={current.net >= 0 ? 'text-income' : 'text-expense'}
+        accentClass="bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400"
         className={netClassName}
+        delay="delay-300"
       >
         <Delta current={current.net} previous={previous.net} goodWhenUp />
       </Item>

@@ -5,10 +5,15 @@ export function LoadingState({ fullScreen = false, label = 'Загрузка…'
   return (
     <div
       role="status"
-      className={cn('flex items-center justify-center gap-3 text-muted', fullScreen ? 'min-h-screen' : 'py-16')}
+      className={cn('flex flex-col items-center justify-center gap-4 text-muted', fullScreen ? 'min-h-screen' : 'py-16')}
     >
-      <Loader2 className="size-5 animate-spin" aria-hidden />
-      <span className="text-sm">{label}</span>
+      <div className="relative">
+        <div className="size-12 rounded-2xl bg-gradient-to-br from-accent-strong to-indigo-500 flex items-center justify-center shadow-lg">
+          <Loader2 className="size-6 animate-spin text-white" aria-hidden />
+        </div>
+        <div className="animate-pulse-ring absolute inset-0 rounded-2xl bg-accent/40" />
+      </div>
+      <span className="text-sm font-medium">{label}</span>
     </div>
   )
 }

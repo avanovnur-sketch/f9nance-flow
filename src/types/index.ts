@@ -6,6 +6,8 @@ export interface Account {
   currency: string
   initialBalance: number
   icon: 'cash' | 'card' | 'savings'
+  /** physical — реальный кошелёк/карта, virtual — виртуальный (цели, накопления) */
+  walletType: 'physical' | 'virtual'
 }
 
 export interface Category {

@@ -42,44 +42,44 @@ export default function AnalyticsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+      <div className="animate-fade-up flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <h1 className="text-2xl font-bold">Аналитика</h1>
           <p className="mt-1 text-sm text-muted">
-            {formatDate(range.from)} — {formatDate(range.to)}. Сравнение: {formatDate(prevRange.from)} — {formatDate(prevRange.to)}
+            {formatDate(range.from)} — {formatDate(range.to)}
           </p>
         </div>
         <PeriodPicker value={period} onChange={setPeriod} />
       </div>
 
       {d.count === 0 ? (
-        <Card>
-          <EmptyState title="Нет данных за период" description="За выбранные даты нет доходов и расходов. Выберите другой период." />
+        <Card className="animate-fade-up delay-100">
+          <EmptyState title="Нет данных за период" description="За выбранные даты нет доходов и расходов. Добавьте операции или выберите другой период." />
         </Card>
       ) : (
         <>
-          <section aria-label="Итоги периода" className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <section aria-label="Итоги периода" className="animate-fade-up delay-100 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             <SummaryCards current={d.current} previous={d.previous} netClassName="md:col-span-2 xl:col-span-1" />
           </section>
 
           <section className="grid gap-4 xl:grid-cols-2">
-            <Card>
+            <Card className="animate-fade-up delay-200">
               <CardHeader title="Изменение баланса" />
               <CashFlowChart data={d.series} />
             </Card>
-            <Card>
+            <Card className="animate-fade-up delay-300">
               <CardHeader title="Доходы и расходы" />
               <IncomeExpenseChart data={d.buckets} />
             </Card>
           </section>
 
           <section className="grid gap-4 xl:grid-cols-3">
-            <Card>
+            <Card className="animate-fade-up delay-200">
               <CardHeader title="Структура расходов" />
               <ExpenseCategoryChart data={d.byCategory} />
             </Card>
 
-            <Card>
+            <Card className="animate-fade-up delay-300">
               <CardHeader title="Самые затратные категории" />
               {d.byCategory.length === 0 ? (
                 <EmptyState title="Нет расходов за период" />
@@ -101,7 +101,7 @@ export default function AnalyticsPage() {
               )}
             </Card>
 
-            <Card>
+            <Card className="animate-fade-up delay-400">
               <CardHeader title="Сравнение периодов" />
               <table className="w-full text-sm">
                 <caption className="sr-only">Сравнение текущего и предыдущего периода</caption>

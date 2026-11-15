@@ -13,6 +13,9 @@ interface DemoData {
   addTransaction: (t: NewTransaction) => void
   updateTransaction: (id: string, t: NewTransaction) => void
   deleteTransaction: (id: string) => void
+  addAccount: (a: Omit<Account, 'id'>) => void
+  updateAccount: (id: string, a: Omit<Account, 'id'>) => void
+  deleteAccount: (id: string) => void
 }
 
 const Ctx = createContext<DemoData | null>(null)
@@ -25,6 +28,7 @@ function newId(): string {
 
 export function DemoDataProvider({ children }: { children: ReactNode }) {
   const [transactions, setTransactions] = useState<Transaction[]>(buildDemoTransactions)
+  const [accounts, setAccounts] = useState<Account[]>(demoAccounts)
 
   const addTransaction = useCallback((t: NewTransaction) => {
     setTransactions((prev) => [{ ...t, id: newId() }, ...prev])
@@ -38,17 +42,32 @@ export function DemoDataProvider({ children }: { children: ReactNode }) {
     setTransactions((prev) => prev.filter((x) => x.id !== id))
   }, [])
 
+  const addAccount = useCallback((a: Omit<Account, 'id'>) => {
+    setAccounts((prev) => [...prev, { ...a, id: newId() }])
+  }, [])
+
+  const updateAccount = useCallback((id: string, a: Omit<Account, 'id'>) => {
+    setAccounts((prev) => prev.map((x) => (x.id === id ? { ...a, id } : x)))
+  }, [])
+
+  const deleteAccount = useCallback((id: string) => {
+    setAccounts((prev) => prev.filter((x) => x.id !== id))
+  }, [])
+
   const value = useMemo<DemoData>(
     () => ({
       transactions,
-      accounts: demoAccounts,
+      accounts,
       categories: demoCategories,
       budgets: demoBudgets,
       addTransaction,
       updateTransaction,
       deleteTransaction,
+      addAccount,
+      updateAccount,
+      deleteAccount,
     }),
-    [transactions, addTransaction, updateTransaction, deleteTransaction],
+    [transactions, accounts, addTransaction, updateTransaction, deleteTransaction, addAccount, updateAccount, deleteAccount],
   )
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>
